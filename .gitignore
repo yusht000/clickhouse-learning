@@ -1,2 +1,5 @@
 .vscode
 scripts/python/make_test_data/__pycache__
+# pycharm
+.idea
+.idea/vcs.xml
