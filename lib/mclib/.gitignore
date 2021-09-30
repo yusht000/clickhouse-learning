@@ -1,0 +1,11 @@
+*.py[cod]
+
+# C extensions
+*.so
+# Packages
+*.egg
+*.egg-info
+.project
+.pydevproject
+# pycharm
+.idea
