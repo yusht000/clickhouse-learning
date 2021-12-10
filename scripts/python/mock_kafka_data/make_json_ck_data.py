@@ -9,12 +9,12 @@ from kafka import KafkaProducer
 
 
 topic = 'topic001'
-nums  = 100
+nums  = 30
 
 def main() :
 
     producer = KafkaProducer(
-        bootstrap_servers=['52.220.214.100:49176','52.220.214.100:49177','52.220.214.100:49178'],
+        bootstrap_servers=['52.220.214.100:49180'],
         value_serializer = lambda v: json.dumps(v).encode('utf-8')
     )
 
@@ -34,7 +34,7 @@ def main() :
             "data": "123",
             "ddid":_
         }
-        time.sleep(2)
+        time.sleep(5)
 
         producer.send(topic, value=data)
 
