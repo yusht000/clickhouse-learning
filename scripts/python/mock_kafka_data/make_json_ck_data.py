@@ -5,11 +5,11 @@
 import json
 import time
 from kafka import KafkaProducer
-
+import random
 
 
 topic = 'topic002'
-nums  = 100
+nums  = 300
 
 def main() :
 
@@ -32,11 +32,17 @@ def main() :
             "platform": "CK-DD",
             "event": "aws_test",
             "data": "123",
-            "ddid":_
+            "ddid":random.randint(_,50000000)
         }
+
         time.sleep(1)
 
         producer.send(topic, value=data)
+
+
+        if (cnt % 10) == 0:
+
+            producer.flush()
 
         cnt += 1
 
