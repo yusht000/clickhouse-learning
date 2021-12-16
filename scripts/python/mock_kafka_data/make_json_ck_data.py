@@ -11,6 +11,7 @@ import random
 topic = 'topic002'
 nums  = 300
 
+
 def main() :
 
     producer = KafkaProducer(
@@ -37,7 +38,7 @@ def main() :
 
         time.sleep(1)
 
-        producer.send(topic, value=data)
+        # producer.send(topic, value=data)
 
 
         if (cnt % 10) == 0:
@@ -62,7 +63,8 @@ def main() :
 
 if __name__ == '__main__':
 
+    main()
 
-   main()
 
-   print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+
+
