@@ -6,6 +6,11 @@ __date__ = "20211216"
 
 
 
+BASIC_AUTH={
+    "USER":"test",
+    "PASSWORD":'123'
+}
+
 KAFKA_URI = {
     "BOOTSTRAP_SERVERS" : [
         '52.220.214.100:49180',
