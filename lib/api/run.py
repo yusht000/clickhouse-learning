@@ -7,6 +7,12 @@
 
 __author__='victor'
 
+
+from gevent import  monkey
+from gevent.pywsgi import WSGIServer
+
+monkey.patch_all()
+
 import sys
 import json
 import time
@@ -15,6 +21,8 @@ import requests
 
 from requests.auth import  HTTPBasicAuth
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from multiprocessing import cpu_count, Process
+from server import Intranet_Server
 
 from config.setting import BASIC_AUTH
 from worker import _workThreadSMS
@@ -92,6 +100,31 @@ def mirrorService(xport1) :
 
 
 
+
+def schedulerIntranetService(xport) :
+
+    try:
+
+        s = Intranet_Server()
+        multiserver = WSGIServer(('0.0.0.0', xport), s.app, log=None)
+        multiserver.start()
+
+        def server_forever():
+            multiserver.start_accepting()
+            multiserver._stop_event.wait()
+
+        for i in range(cpu_count()):
+
+            p = Process(target=server_forever())
+
+            p.start()
+
+    except Exception as e :
+
+        print('schedulerIntranetService ', str(e))
+
+
+
 if __name__ == '__main__':
 
 
@@ -111,6 +144,7 @@ if __name__ == '__main__':
 
     with ProcessPoolExecutor(max_workers=2) as executor:
 
+         executor.submit(schedulerIntranetService,port_num)
          executor.submit(mirrorService, port_num)
          executor.submit(workService)
 
