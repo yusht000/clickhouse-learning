@@ -20,7 +20,6 @@ class kafkaClient(object):
     @property
     def _createProducer(self):
 
-        print('creating one KafkaProducer.... ')
         try:
 
             return  KafkaProducer(
@@ -39,8 +38,6 @@ class kafkaClient(object):
     @property
     def _createConsumer(self):
 
-        print('creating  one kafkaConsumer....')
-
         try:
 
             return KafkaConsumer(
@@ -51,6 +48,7 @@ class kafkaClient(object):
                 enable_auto_commit = True,
                 auto_commit_interval_ms = 5000
             )
+
         except Exception as e :
 
             print("create kafkaConsume is not Available .....", str(e))

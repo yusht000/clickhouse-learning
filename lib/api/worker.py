@@ -5,4 +5,8 @@
 
 def _workThreadSMS(para):
 
-    print("send_mail")
+    if para is not None:
+
+        print(para)
+
+        print("send_mail ....")

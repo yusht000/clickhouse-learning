@@ -45,7 +45,7 @@ def workService():
 
           elif msg["type"] == "SMS" :
 
-              executor.submit(_workThreadSMS(),msg)
+              executor.submit(_workThreadSMS, msg)
 
         except Exception as e :
 
@@ -53,7 +53,7 @@ def workService():
 
     for msg in kafka_client.consumer:
 
-        print(msg['partition'], msg['timestamp'], msg['offset'], msg['value'])
+        print('worker is start ...', msg['partition'], msg['timestamp'], msg['offset'], msg['value'])
 
         worker(body=msg['value'])
 
