@@ -10,29 +10,37 @@ dd_bp = Blueprint(
     __name__
 )
 
-@dd_bp.route("test/jj/col.gif", methods=['POST'])
-@requires_auth
+@dd_bp.route("/test/jj/col.gif", methods=['POST'])
+#@requires_auth
 def function_api_probe_post():
 
     '''
 
     :return:
     '''
+    print('mirror  probe ....')
     if (request.is_json is False and "event" not in request.args) or (request.is_json is True  and "event" not in request.json):
+
 
         return jsonify(
             {
                 "status" : "error"
-            }, 400
+            },
+
+            400
         )
 
     else:
 
+
         return jsonify(
+
             {
                 "status" : "ok"
-            }
-        ), 200
+            },
+
+            200
+        )
 
 
 

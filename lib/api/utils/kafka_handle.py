@@ -20,19 +20,26 @@ class kafkaClient(object):
     @property
     def _createProducer(self):
 
+        print('creating one KafkaProducer.... ')
         try:
 
             return  KafkaProducer(
-                bootstap_servers = KAFKA_URI["BOOTSTRAP_SERVERS"],
-                retries = 3
+                bootstrap_servers = KAFKA_URI["BOOTSTRAP_SERVERS"],
+                retries = 3,
             )
+
+        except Exception as e:
+
+            print("create kafkaProducer is not Available .....", str(e))
 
         except NoBrokersAvailable :
 
-            print('')
+            print(' create kafkaProducer  is  not Available ...')
 
     @property
     def _createConsumer(self):
+
+        print('creating  one kafkaConsumer....')
 
         try:
 
@@ -42,12 +49,16 @@ class kafkaClient(object):
                 bootstrap_servers = KAFKA_URI["BOOTSTRAP_SERVERS"],
                 auto_offset_reset = "latest",
                 enable_auto_commit = True,
-                auto_commit_interval = 5000
+                auto_commit_interval_ms = 5000
             )
+        except Exception as e :
+
+            print("create kafkaConsume is not Available .....", str(e))
+
 
         except NoBrokersAvailable :
 
-            print("")
+            print("create kafkaConsume is not Available .....")
 
     @property
     def consumer(self):
@@ -72,7 +83,7 @@ class kafkaClient(object):
 
         if not self._producer_client :
 
-            print("KAFKA-ERROR :")
+            print("KAFKA-ERROR : producer is not available")
 
             return  False
 

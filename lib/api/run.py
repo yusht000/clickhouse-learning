@@ -65,19 +65,21 @@ def mirrorService(xport1) :
 
     while True :
 
-        time.sleep(60 * 10)
+        time.sleep(8)
 
         try:
 
+            print('mirror post ....')
             r1 = requests.post(
                 url="http://0.0.0.0:{}/test/jj/col.gif".format(xport1),
                 headers={"Content-type":"application/json"},
-                json={"event" : "mm", "text" : " intranet jj message "},
+                json={"event" : "aws_test", "text" : " intranet jj message "},
                 auth=HTTPBasicAuth(BASIC_AUTH.get("USER"), BASIC_AUTH.get("PASSWORD")),
                 timeout =1
             )
 
-            if r1.status_code != 200 :
+            print('r1.status_code' , r1.status_code)
+            if r1.status_code == 200 :
 
                raise ValueError(
                    "jj message probe status_code error , r1 :{}".format(r1.status_code)
@@ -85,7 +87,10 @@ def mirrorService(xport1) :
 
         except Exception as e:
 
+            print('mirror start producer...')
+
             kafka_client.producer(
+
                 json.dumps(
                     {
                         "type" :  "SMS",
@@ -142,7 +147,7 @@ if __name__ == '__main__':
         port_num = 8889
 
 
-    with ProcessPoolExecutor(max_workers=2) as executor:
+    with ProcessPoolExecutor(max_workers=3) as executor:
 
          executor.submit(schedulerIntranetService,port_num)
          executor.submit(mirrorService, port_num)

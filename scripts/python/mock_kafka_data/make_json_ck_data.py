@@ -38,7 +38,7 @@ def main() :
 
         time.sleep(1)
 
-        # producer.send(topic, value=data)
+        producer.send(topic, value=data)
 
 
         if (cnt % 10) == 0:
