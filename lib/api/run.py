@@ -65,7 +65,6 @@ def workService():
                 msg["offset"],
                 msg["value"]
         ))
-
         worker(body=msg['value'])
 
 
@@ -85,7 +84,7 @@ def mirrorService(xport1) :
                 timeout =1
             )
 
-            if r1.status_code == 200 :
+            if r1.status_code != 200 :
 
                raise ValueError(
                    "jj message probe status_code error , r1 :{}".format(r1.status_code)

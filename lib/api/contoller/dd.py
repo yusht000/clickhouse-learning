@@ -18,7 +18,7 @@ def function_api_probe_post():
 
     :return:
     '''
-    print('mirror  probe ....')
+    print(' route _function_api_probe_post ....')
     if (request.is_json is False and "event" not in request.args) or (request.is_json is True  and "event" not in request.json):
 
 

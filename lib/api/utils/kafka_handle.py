@@ -22,7 +22,7 @@ class kafkaClient(object):
         try:
             return  KafkaProducer(
                 bootstrap_servers = KAFKA_URI["BOOTSTRAP_SERVERS"],
-                retries = 3,
+                retries = 8
             )
         except NoBrokersAvailable :
 
@@ -128,23 +128,23 @@ class kafkaClient(object):
                 return  False
 
 
-    def on_send_success(self, metadata):
+    def on_send_success(self, record_metadata):
+
+        print("被发往的主题：", record_metadata.topic)
 
         logger.info(
-            "KAFKA-INFO : partition : {}, timestamp :{}, offset : {} ,topic: {}, value:{} ".format(
-                metadata.partition,
-                metadata.timestamp,
-                metadata.offset,
-                metadata.topic,
-                metadata.value
+            "KAFKA-INFO-CALLBACK : on_send_success :  partition : {}, topic: {} , offset :{} ,".format(
+              record_metadata.partition,
+              record_metadata.topic,
+              record_metadata.offset
             )
         )
 
-    def on_send_error(self, except_error):
 
+    def on_send_error(self, exc_info):
         logger.error(
-            "KAFKA-ERROR : send msg error ",
-            exc_info = except_error
+             "KAFKA-ERROR : send msg error ",
+             exc_info = exc_info
         )
 
 
