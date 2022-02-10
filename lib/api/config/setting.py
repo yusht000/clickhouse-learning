@@ -21,3 +21,11 @@ KAFKA_URI = {
     "GROUP_ID": "v1",
     "KEY": "test"
 }
+
+
+LOG_INFO = {
+    "LEVEL":"INFO",
+    "NAME": "api",
+    "PATH": "/Users/bairong/tmp/all.log",
+    "ERROR_PATH" : "/Users/bairong/tmp/error.log"
+}

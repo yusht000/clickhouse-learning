@@ -27,6 +27,7 @@ from server import Intranet_Server
 from config.setting import BASIC_AUTH
 from worker import _workThreadSMS
 from utils  import kafka_client
+from utils.log_handle import logger
 
 
 def workService():
@@ -47,18 +48,25 @@ def workService():
 
               executor.submit(_workThreadSMS, msg)
 
+          else:
+
+              logger.info("UNKNOWN FORMAT : {}".format(body))
+
         except Exception as e :
 
-            print("workService" , str(e))
+            logger.info("UNKNOWN FORMAT : {} , error : {} ".format(body, e))
 
     for msg in kafka_client.consumer:
 
-        print('worker is start ...', msg['partition'], msg['timestamp'], msg['offset'], msg['value'])
+        logger.info(
+            " PARTITION : {}, TIMESTAMP : {} , OFFSET : {} . VALUE : {}".format(
+                msg["partition"],
+                msg["timestamp"],
+                msg["offset"],
+                msg["value"]
+        ))
 
         worker(body=msg['value'])
-
-
-
 
 
 def mirrorService(xport1) :
@@ -69,7 +77,6 @@ def mirrorService(xport1) :
 
         try:
 
-            print('mirror post ....')
             r1 = requests.post(
                 url="http://0.0.0.0:{}/test/jj/col.gif".format(xport1),
                 headers={"Content-type":"application/json"},
@@ -78,7 +85,6 @@ def mirrorService(xport1) :
                 timeout =1
             )
 
-            print('r1.status_code' , r1.status_code)
             if r1.status_code == 200 :
 
                raise ValueError(
@@ -87,10 +93,7 @@ def mirrorService(xport1) :
 
         except Exception as e:
 
-            print('mirror start producer...')
-
             kafka_client.producer(
-
                 json.dumps(
                     {
                         "type" :  "SMS",
@@ -102,8 +105,6 @@ def mirrorService(xport1) :
                     }
                 )
             )
-
-
 
 
 def schedulerIntranetService(xport) :
@@ -126,8 +127,7 @@ def schedulerIntranetService(xport) :
 
     except Exception as e :
 
-        print('schedulerIntranetService ', str(e))
-
+        logger.error("schedulerIntranetService error : {}".format(e))
 
 
 if __name__ == '__main__':
@@ -139,13 +139,10 @@ if __name__ == '__main__':
 
         if port_num >= 65534 or port_num <=0:
 
-               print('port error ...')
-
                sys.exit(1)
     else:
 
         port_num = 8889
-
 
     with ProcessPoolExecutor(max_workers=3) as executor:
 

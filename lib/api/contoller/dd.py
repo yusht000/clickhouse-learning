@@ -11,7 +11,7 @@ dd_bp = Blueprint(
 )
 
 @dd_bp.route("/test/jj/col.gif", methods=['POST'])
-#@requires_auth
+@requires_auth
 def function_api_probe_post():
 
     '''

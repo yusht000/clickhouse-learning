@@ -3,10 +3,9 @@
 import  datetime
 
 from kafka import KafkaConsumer, KafkaProducer
-
 from kafka.errors import NoBrokersAvailable, KafkaTimeoutError
-
 from config.setting import KAFKA_URI
+from utils.log_handle import logger
 
 
 
@@ -21,19 +20,16 @@ class kafkaClient(object):
     def _createProducer(self):
 
         try:
-
             return  KafkaProducer(
                 bootstrap_servers = KAFKA_URI["BOOTSTRAP_SERVERS"],
                 retries = 3,
             )
-
-        except Exception as e:
-
-            print("create kafkaProducer is not Available .....", str(e))
-
         except NoBrokersAvailable :
 
-            print(' create kafkaProducer  is  not Available ...')
+            logger.error("KAFKA ERROR : kafka brokers not available in producer , {}".format(
+                KAFKA_URI["BOOTSTRAP_SERVERS"]
+            ))
+
 
     @property
     def _createConsumer(self):
@@ -49,14 +45,12 @@ class kafkaClient(object):
                 auto_commit_interval_ms = 5000
             )
 
-        except Exception as e :
-
-            print("create kafkaConsume is not Available .....", str(e))
-
-
         except NoBrokersAvailable :
 
-            print("create kafkaConsume is not Available .....")
+              logger.error("KAFKA ERROR : kafka brokers not available in consumer  , {}". format(
+                  KAFKA_URI["BOOTSTRAP_SERVERS"]
+              ))
+
 
     @property
     def consumer(self):
@@ -72,17 +66,23 @@ class kafkaClient(object):
                     "value":x.value.decode()
                 }
 
-        except Exception as e :
+        except NoBrokersAvailable as e :
 
-            print('', str(e))
+              logger.error(
+                  "KAFKA-ERROR : kafka broker is not available in consumer , {} ".format(
+                      KAFKA_URI["BOOTSTRAP_SERVERS"]
+                  )
+              )
 
 
     def producer(self,msg):
 
         if not self._producer_client :
-
-            print("KAFKA-ERROR : producer is not available")
-
+            logger.error(
+                 "KAFKA ERROR : producer is not available , {}".format(
+                     datetime.datetime.now().strptime('%Y-%m-%d %H:%M')
+                 )
+             )
             return  False
 
         else:
@@ -103,33 +103,49 @@ class kafkaClient(object):
 
                 if (next - pre).seconds > 60:
 
-                    print("warning  send msg to kafka is more than 60")
+                    logger.warning("KAFKA-WARNING : send msg to kafka is more than 60s")
 
                 return  True
 
             except KafkaTimeoutError as e :
 
-                print("KafkaTimeoutError ", msg, str(e))
+                logger.error(
+                    "KAFKA-ERROR: send msg timeout, content :{} . exception : () ".format(
+                        msg,
+                        e
+                    )
+                )
 
             except Exception  as e :
 
-                print('exception', str(e))
+                logger.error(
+                    "KAFKA-ERROR: send msg timeout, content :{} . exception : () ".format(
+                        msg,
+                        e
+                    )
+                )
 
                 return  False
 
 
     def on_send_success(self, metadata):
 
-        print(metadata.partition,metadata.timestamp, metadata.offset, metadata.topic,metadata.value)
+        logger.info(
+            "KAFKA-INFO : partition : {}, timestamp :{}, offset : {} ,topic: {}, value:{} ".format(
+                metadata.partition,
+                metadata.timestamp,
+                metadata.offset,
+                metadata.topic,
+                metadata.value
+            )
+        )
 
+    def on_send_error(self, except_error):
 
-    def on_send_error(self, error):
-
-        print(error)
-
-
-
-
+        logger.error(
+            "KAFKA-ERROR : send msg error ",
+            exc_info = except_error
+        )
 
 
 if __name__ == '__main__':
