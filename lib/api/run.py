@@ -13,18 +13,22 @@ from gevent.pywsgi import WSGIServer
 
 monkey.patch_all()
 
-import sys
+import sys, logging
 import json
 import time
 import datetime
 import requests
 
+from logging.handlers import RotatingFileHandler
+
+from config.setting import DD_MSG_QUEUE
 from requests.auth import  HTTPBasicAuth
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from multiprocessing import cpu_count, Process
 from server import Intranet_Server
 
-from config.setting import BASIC_AUTH
+from interceptor.request_filter import handle_request
+from config.setting import BASIC_AUTH ,LOG_INFO
 from worker import _workThreadSMS
 from utils  import kafka_client
 from utils.log_handle import logger
@@ -84,6 +88,7 @@ def mirrorService(xport1) :
                 timeout =1
             )
 
+            print('r1.status_code......',r1.status_code)
             if r1.status_code != 200 :
 
                raise ValueError(
@@ -106,11 +111,54 @@ def mirrorService(xport1) :
             )
 
 
+def ddService():
+
+
+    try:
+            PATH =LOG_INFO.get("PATH")
+
+            loggerDD = logging.getLogger(
+                "dd"
+            )
+
+            loggerDD.setLevel(LOG_INFO.get('LEVEL'))
+
+            _logRotatingFileDDHandler = RotatingFileHandler(
+                PATH[0:PATH.rfind("/")] + "/dd.log",
+                maxBytes= 1024 * 1024,
+                backupCount= 10,
+                encoding="utf-8"
+            )
+            _logRotatingFileDDHandler.setFormatter(logging.Formatter('%(message)s'))
+
+            loggerDD.addHandler(_logRotatingFileDDHandler)
+
+            print(' ddService start  finish ......')
+
+    except Exception as e:
+
+           print('ddService Exception ....')
+
+           logger.error('ddService error', str(e))
+
+    while True :
+
+        value = DD_MSG_QUEUE.get(True)
+
+        loggerDD.info(value)
+
+
+
+
+
+
+
 def schedulerIntranetService(xport) :
 
     try:
 
         s = Intranet_Server()
+        handle_request(s.app)
         multiserver = WSGIServer(('0.0.0.0', xport), s.app, log=None)
         multiserver.start()
 
@@ -143,11 +191,15 @@ if __name__ == '__main__':
 
         port_num = 8889
 
-    with ProcessPoolExecutor(max_workers=3) as executor:
+    with ProcessPoolExecutor(max_workers=4) as executor:
 
          executor.submit(schedulerIntranetService,port_num)
+
          executor.submit(mirrorService, port_num)
+
          executor.submit(workService)
+
+         executor.submit(ddService)
 
 
 

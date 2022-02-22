@@ -1,5 +1,7 @@
 # coding: utf-8
 
+import uuid
+from multiprocessing import  Queue
 __version__ = "1.0.0"
 __number__ = "v3"
 __date__ = "20211216"
@@ -29,3 +31,14 @@ LOG_INFO = {
     "PATH": "/Users/bairong/tmp/all.log",
     "ERROR_PATH" : "/Users/bairong/tmp/error.log"
 }
+
+DD_EVENT_WHITE=[
+    "test" ,'aws_test'
+]
+
+SNOWFLAKE_URI = {
+    "DATA_CENTER": uuid.getnode(),
+}
+
+
+DD_MSG_QUEUE=Queue(10240)
